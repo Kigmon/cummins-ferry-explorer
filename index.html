@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cummins Ferry Explorer</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-1A3n7Z1ysABVgQIrcjGumDvCs7vBjXEQh1XeHzVvzA8="
+    crossorigin=""
+  />
+</head>
+<body>
+  <header>
+    <h1>Cummins Ferry Explorer</h1>
+    <nav>
+      <button class="tab-button" data-tab="explore">Explore</button>
+      <button class="tab-button" data-tab="map">Map</button>
+      <button class="tab-button" data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Explore Tab -->
+    <section id="explore" class="tab-content">
+      <h2>Find Places</h2>
+      <div class="category-select">
+        <label for="categorySelect">Category:</label>
+        <select id="categorySelect">
+          <option value="cafe">Coffee Shops</option>
+          <option value="bakery">Bakeries</option>
+          <option value="restaurant">Restaurants</option>
+        </select>
+      </div>
+      <ul id="placesList"></ul>
+    </section>
+
+    <!-- Map Tab -->
+    <section id="map" class="tab-content" style="display: none;">
+      <h2>Map</h2>
+      <div id="mapContainer"></div>
+      <div id="mapToggles">
+        <label><input type="checkbox" id="toggleCafe" checked /> Coffee Shops</label>
+        <label><input type="checkbox" id="toggleBakery" checked /> Bakeries</label>
+        <label><input type="checkbox" id="toggleRestaurant" checked /> Restaurants</label>
+      </div>
+    </section>
+
+    <!-- Settings Tab -->
+    <section id="settings" class="tab-content" style="display: none;">
+      <h2>Settings</h2>
+      <form id="settingsForm">
+        <fieldset>
+          <legend>Select origin:</legend>
+          <label><input type="radio" name="origin" value="camp" checked /> Campground</label>
+          <label><input type="radio" name="origin" value="current" /> Your location</label>
+        </fieldset>
+        <div>
+          <label for="radiusInput">Search radius (meters):</label>
+          <input type="number" id="radiusInput" min="100" value="2000" />
+        </div>
+        <fieldset>
+          <legend>Default categories visible on map:</legend>
+          <label><input type="checkbox" name="defaultCategory" value="cafe" checked /> Coffee Shops</label>
+          <label><input type="checkbox" name="defaultCategory" value="bakery" checked /> Bakeries</label>
+          <label><input type="checkbox" name="defaultCategory" value="restaurant" checked /> Restaurants</label>
+        </fieldset>
+        <button type="submit">Save Settings</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j7QRqDgGmcGDzzPr2nZlDY7OdFU1R5xgu9wZk1Y="
+    crossorigin=""
+  ></script>
+  <script src="script.js"></script>
+</body>
+</html>
