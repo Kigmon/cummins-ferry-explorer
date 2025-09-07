@@ -201,61 +201,13 @@ function renderChapter(title, artTheme, paragraph, choices){
   });
 }
 
-// Show epilogue then advance to next chapter automatically
-function showEpilogue(day, part, placeName, vibe){
-  const title = `A stop at ${placeName}`;
-  document.getElementById("title").innerHTML = title;
-  document.getElementById("text").innerHTML = Story.epilogue(placeName, vibe);
-  document.getElementById("art").innerHTML = whimsicalSVG(title+placeName, part==="morning"?"coffee":(part==="midday"?"trail":"campfire"));
-  const c = document.getElementById("choices");
-  c.innerHTML = "";
-  const seq = part==="morning" ? "midday" : (part==="midday" ? "evening" : "nextday");
-  const nextBtn = document.createElement("button");
-  nextBtn.className="choice";
-  nextBtn.innerHTML = seq==="nextday" ? "Wrap up the day →" : "Onward →";
-  nextBtn.addEventListener("click", async ()=>{
-    if (seq==="midday") await chapterMidday(day);
-    else if (seq==="evening") await chapterEvening(day);
-    else await beginDay(day+1);
-  });
-  c.appendChild(nextBtn);
-}
-
-// Begin a day’s sequence (morning first)
-async function beginDay(day){
-  const s = Settings.get();
-  const start = s.start ? new Date(s.start) : null;
-  const d = start ? new Date(start.getTime() + (day-1)*86400000) : null;
-  const dateLabel = d ? d.toLocaleDateString(undefined,{weekday:"long", month:"short", day:"numeric"}) : `Day ${day}`;
-  document.getElementById("title").innerHTML = `Day ${day} begins — ${dateLabel}`;
-  document.getElementById("text").innerHTML = Story.morning();
-  document.getElementById("art").innerHTML = whimsicalSVG("day"+day, "river");
-  document.getElementById("choices").innerHTML = "";
-  await chapterMorning(day);
-}
-
-// Entry: build intro or resume
-async function startStory(){
-  const s = Settings.get();
-  const dateStr = s.start && s.end ? `${new Date(s.start).toLocaleDateString()} to ${new Date(s.end).toLocaleDateString()}` : "soon™";
-  document.getElementById("title").innerHTML = "Welcome to the Palisades";
-  document.getElementById("text").innerHTML = Story.textIntro(dateStr);
-  document.getElementById("art").innerHTML = whimsicalSVG("intro","river");
-  const c = document.getElementById("choices");
-  c.innerHTML = "";
-  const go = document.createElement("button");
-  go.className = "choice";
-  go.textContent = "Begin Day 1";
-  go.addEventListener("click", ()=>beginDay(1));
-  c.appendChild(go);
-}
-
+// Alias to allow `renderChoices(...)` to call the underlying chapter renderer
 function renderChoices(title, artTheme, paragraph, choices){
   return renderChapter(title, artTheme, paragraph, choices);
 }
 
+// Generate the next set of options based on where we are in the day
 async function nextOptions(day, seq){
- 
   const opts = [];
   if (seq === "midday"){
     const origin = await Geo.current();
@@ -288,12 +240,14 @@ async function nextOptions(day, seq){
   return opts;
 }
 
+// Show epilogue and then present multiple branch options for what's next
 async function showEpilogue(day, part, placeName, vibe){
   const title = `A stop at ${placeName}`;
   document.getElementById("title").innerHTML = title;
   document.getElementById("text").innerHTML = Story.epilogue(placeName, vibe);
   document.getElementById("art").innerHTML = whimsicalSVG(
-    title+placeName, part==="morning" ? "coffee" : (part==="midday" ? "trail" : "campfire")
+    title+placeName,
+    part==="morning" ? "coffee" : (part==="midday" ? "trail" : "campfire")
   );
 
   const seq = part==="morning" ? "midday" : (part==="midday" ? "evening" : "nextday");
@@ -307,9 +261,37 @@ async function showEpilogue(day, part, placeName, vibe){
   (await nextOptions(day, seq)).forEach(ch => {
     const btn = document.createElement("button");
     btn.className = "choice";
-    btn.innerHTML = `<div><div>${ch.label}</div>` + (ch.meta? `<span class=\"muted\">${ch.meta}</span>`:"") + `</div>`;
+    btn.innerHTML = `<div><div>${ch.label}</div>` + (ch.meta ? `<span class="muted">${ch.meta}</span>` : "") + `</div>`;
     btn.addEventListener("click", ch.onChoose);
     c.appendChild(btn);
   });
 }
+
+// Begin a day’s sequence (morning first)
+async function beginDay(day){
+  const s = Settings.get();
+  const start = s.start ? new Date(s.start) : null;
+  const d = start ? new Date(start.getTime() + (day-1)*86400000) : null;
+  const dateLabel = d ? d.toLocaleDateString(undefined,{weekday:"long", month:"short", day:"numeric"}) : `Day ${day}`;
+  document.getElementById("title").innerHTML = `Day ${day} begins — ${dateLabel}`;
+  document.getElementById("text").innerHTML = Story.morning();
+  document.getElementById("art").innerHTML = whimsicalSVG("day"+day, "river");
+  document.getElementById("choices").innerHTML = "";
+  await chapterMorning(day);
+}
+
+// Entry: build intro or resume
+async function startStory(){
+  const s = Settings.get();
+  const dateStr = s.start && s.end ? `${new Date(s.start).toLocaleDateString()} to ${new Date(s.end).toLocaleDateString()}` : "soon™";
+  document.getElementById("title").innerHTML = "Welcome to the Palisades";
+  document.getElementById("text").innerHTML = Story.textIntro(dateStr);
+  document.getElementById("art").innerHTML = whimsicalSVG("intro","river");
+  const c = document.getElementById("choices");
+  c.innerHTML = "";
+  const go = document.createElement("button");
+  go.className = "choice";
+  go.textContent = "Begin Day 1";
+  go.addEventListener("click", ()=>beginDay(1));
+  c.appendChild(go);
 }
