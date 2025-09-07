@@ -1,84 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cummins Ferry Explorer</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-1A3n7Z1ysABVgQIrcjGumDvCs7vBjXEQh1XeHzVvzA8="
-    crossorigin=""
-  />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cummins Ferry – Choose Your Own Adventure</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Cummins Ferry Explorer</h1>
-    <nav>
-      <button class="tab-button" data-tab="explore">Explore</button>
-      <button class="tab-button" data-tab="map">Map</button>
-      <button class="tab-button" data-tab="settings">Settings</button>
+  <header class="topbar">
+    <div class="brand">🌲 Cummins Ferry Storybook</div>
+    <nav class="nav">
+      <button class="pill" id="btnStory">Story</button>
+      <button class="pill" id="btnMap">Map</button>
+      <button class="pill" id="btnSettings">Settings</button>
     </nav>
   </header>
 
-  <main>
-    <!-- Explore Tab -->
-    <section id="explore" class="tab-content">
-      <h2>Find Places</h2>
-      <div class="category-select">
-        <label for="categorySelect">Category:</label>
-        <select id="categorySelect">
-          <option value="cafe">Coffee Shops</option>
-          <option value="bakery">Bakeries</option>
-          <option value="restaurant">Restaurants</option>
-        </select>
+  <main id="viewStory" class="view">
+    <section id="card" class="card">
+      <div id="art" class="art" aria-hidden="true"></div>
+      <div class="content">
+        <h1 id="title">Loading your story…</h1>
+        <div id="text" class="text"></div>
+        <div id="choices" class="choices"></div>
       </div>
-      <ul id="placesList"></ul>
-    </section>
-
-    <!-- Map Tab -->
-    <section id="map" class="tab-content" style="display: none;">
-      <h2>Map</h2>
-      <div id="mapContainer"></div>
-      <div id="mapToggles">
-        <label><input type="checkbox" id="toggleCafe" checked /> Coffee Shops</label>
-        <label><input type="checkbox" id="toggleBakery" checked /> Bakeries</label>
-        <label><input type="checkbox" id="toggleRestaurant" checked /> Restaurants</label>
-      </div>
-    </section>
-
-    <!-- Settings Tab -->
-    <section id="settings" class="tab-content" style="display: none;">
-      <h2>Settings</h2>
-      <form id="settingsForm">
-        <fieldset>
-          <legend>Select origin:</legend>
-          <label><input type="radio" name="origin" value="camp" checked /> Campground</label>
-          <label><input type="radio" name="origin" value="current" /> Your location</label>
-        </fieldset>
-        <div>
-          <label for="radiusInput">Search radius (meters):</label>
-          <input type="number" id="radiusInput" min="100" value="2000" />
-        </div>
-        <fieldset>
-          <legend>Default categories visible on map:</legend>
-          <label><input type="checkbox" name="defaultCategory" value="cafe" checked /> Coffee Shops</label>
-          <label><input type="checkbox" name="defaultCategory" value="bakery" checked /> Bakeries</label>
-          <label><input type="checkbox" name="defaultCategory" value="restaurant" checked /> Restaurants</label>
-        </fieldset>
-        <button type="submit">Save Settings</button>
-      </form>
     </section>
   </main>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1j7QRqDgGmcGDzzPr2nZlDY7OdFU1R5xgu9wZk1Y="
-    crossorigin=""
-  ></script>
-  <script src="script.js"></script>
+  <main id="viewMap" class="view" hidden>
+    <section class="card">
+      <div class="content">
+        <h2>Map & Nearby</h2>
+        <p class="muted">When a chapter asks for a destination (coffee, breakfast, etc.), we’ll show nearby options here too.</p>
+        <div id="mapStatus" class="muted">Map is simple: this app stays offline‑friendly and only uses your GPS for distances.</div>
+      </div>
+    </section>
+  </main>
+
+  <main id="viewSettings" class="view" hidden>
+    <section class="card">
+      <div class="content">
+        <h2>Trip Settings</h2>
+        <form id="settingsForm" class="grid">
+          <label>Start date
+            <input type="date" id="startDate">
+          </label>
+          <label>End date
+            <input type="date" id="endDate">
+          </label>
+          <label>Distance origin
+            <select id="originMode">
+              <option value="gps">Use my phone’s GPS</option>
+              <option value="camp">Use campground</option>
+            </select>
+          </label>
+          <label>Search radius (miles)
+            <input type="number" id="radiusMiles" min="1" max="50" value="15">
+          </label>
+          <button class="cta" type="submit">Save</button>
+        </form>
+        <p class="muted small">Tip: If you already told me dates in chat, I’ll try to prefill—otherwise set them here and I’ll weave them into the story.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Made for a cozy CYOA around the Kentucky River Palisades • Cummins Ferry RV Park + Campground</span>
+  </footer>
+
+  <script src="imgGen.js"></script>
+  <script src="story.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
