@@ -254,9 +254,6 @@ function renderChoices(title, artTheme, paragraph, choices){
   return renderChapter(title, artTheme, paragraph, choices);
 }
 
-function renderChoices(title, artTheme, paragraph, choices){
-  return renderChapter(title, artTheme, paragraph, choices);
-
 async function nextOptions(day, seq){
  
   const opts = [];
@@ -314,4 +311,5 @@ async function showEpilogue(day, part, placeName, vibe){
     btn.addEventListener("click", ch.onChoose);
     c.appendChild(btn);
   });
+}
 }
