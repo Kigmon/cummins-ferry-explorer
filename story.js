@@ -249,3 +249,69 @@ async function startStory(){
   go.addEventListener("click", ()=>beginDay(1));
   c.appendChild(go);
 }
+
+function renderChoices(title, artTheme, paragraph, choices){
+  return renderChapter(title, artTheme, paragraph, choices);
+}
+
+function renderChoices(title, artTheme, paragraph, choices){
+  return renderChapter(title, artTheme, paragraph, choices);
+
+async function nextOptions(day, seq){
+ 
+  const opts = [];
+  if (seq === "midday"){
+    const origin = await Geo.current();
+    const mids = [Landmarks.shakerVillage, Landmarks.highBridge, Landmarks.tomDorman]
+      .map(L => ({...L, distance: Geo.miles(origin, {lat:L.lat, lon:L.lon})}))
+      .sort((a,b)=>a.distance-b.distance);
+    mids.forEach(L => {
+      opts.push({
+        label: L.name,
+        meta: `${L.tag} · ${fmtMiles(L.distance)}`,
+        onChoose: () => showEpilogue(day, "midday", L.name, L.tag)
+      });
+    });
+  } else if (seq === "evening"){
+    [
+      {label:"Campfire tales & s’mores", meta:"Cozy · low miles", target:["evening","the campfire circle","campfire"]},
+      {label:"Stargazing by the river", meta:"Bring a blanket", target:["evening","the riverbank","river"]},
+      {label:"Short night walk", meta:"Fireflies likely", target:["evening","the campground trail","trail"]},
+    ].forEach(x => {
+      const [part, place, vibe] = x.target;
+      opts.push({ label:x.label, meta:x.meta, onChoose:()=>showEpilogue(day, part, place, vibe) });
+    });
+  } else {
+    // nextday
+    [
+      {label:`Early start for Day ${day+1}`, meta:"Sunrise over the Palisades", go:()=>beginDay(day+1)},
+      {label:`Sleep in, pancakes first (Day ${day+1})`, meta:"Leisure mode", go:()=>beginDay(day+1)},
+    ].forEach(x => opts.push({label:x.label, meta:x.meta, onChoose:x.go}));
+  }
+  return opts;
+}
+
+async function showEpilogue(day, part, placeName, vibe){
+  const title = `A stop at ${placeName}`;
+  document.getElementById("title").innerHTML = title;
+  document.getElementById("text").innerHTML = Story.epilogue(placeName, vibe);
+  document.getElementById("art").innerHTML = whimsicalSVG(
+    title+placeName, part==="morning" ? "coffee" : (part==="midday" ? "trail" : "campfire")
+  );
+
+  const seq = part==="morning" ? "midday" : (part==="midday" ? "evening" : "nextday");
+  const c = document.getElementById("choices");
+  c.innerHTML = "";
+  const hdr = document.createElement("div");
+  hdr.className = "muted";
+  hdr.textContent = "Choose what’s next:";
+  c.appendChild(hdr);
+
+  (await nextOptions(day, seq)).forEach(ch => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.innerHTML = `<div><div>${ch.label}</div>` + (ch.meta? `<span class=\"muted\">${ch.meta}</span>`:"") + `</div>`;
+    btn.addEventListener("click", ch.onChoose);
+    c.appendChild(btn);
+  });
+}
